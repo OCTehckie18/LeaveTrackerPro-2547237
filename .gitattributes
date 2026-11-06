@@ -1,0 +1,8 @@
+# Keep line endings stable across Windows/macOS/Linux checkouts.
+# Shell scripts and container files run in Linux containers: CRLF would break them
+# ("/bin/sh^M: bad interpreter"), so they are always checked out with LF.
+* text=auto
+*.sh text eol=lf
+Dockerfile* text eol=lf
+*.conf text eol=lf
+*.yml text eol=lf
