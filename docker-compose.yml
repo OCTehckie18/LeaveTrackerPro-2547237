@@ -1,0 +1,58 @@
+# One command to run the whole app locally:   docker compose up --build
+# Then open http://localhost:8080  (demo accounts are shown on the login page).
+name: leavetracker
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres        # local development only
+      POSTGRES_DB: leavetracker
+    ports:
+      - "127.0.0.1:5433:5432"            # for running tests / psql from your machine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d leavetracker"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: local
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/leavetracker
+      ALLOWED_ORIGINS: "http://localhost:8080,http://127.0.0.1:8080,http://localhost:5173,http://127.0.0.1:5173"
+      TRUSTED_PROXY_HOPS: "1"            # nginx (web) is one trusted hop in front of the API
+      DEMO_MODE: "true"
+      DEMO_PASSWORD: "${DEMO_PASSWORD:-DemoPass#2026}"
+      LOCAL_STORAGE_DIR: /data/blobs
+    ports:
+      - "127.0.0.1:8001:8000"           # for `npm run dev` (Vite proxies /api here; see frontend/vite.config.ts)
+    volumes:
+      - blobs:/data/blobs
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.web
+      args:
+        VITE_DEMO_MODE: "true"
+        VITE_DEMO_PASSWORD: "${DEMO_PASSWORD:-DemoPass#2026}"
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:
+  blobs:
