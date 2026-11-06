@@ -1,0 +1,187 @@
+@import "tailwindcss";
+
+/* Design tokens (docs/DESIGN.md). Inspired by Atlassian / GitHub: calm neutrals, one blue accent,
+   status "lozenges". Colour is never the only signal: lozenges also carry an icon and a text label.
+   Dark mode follows the device setting. */
+:root {
+  --bg: #f7f8f9;
+  --surface: #ffffff;
+  --sunken: #f1f2f4;
+  --hover: #f1f2f4;
+  --selected: #e9f2ff;
+  --text: #172b4d;
+  --muted: #5e6c84;
+  --border: #dcdfe4;
+  --primary: #0c66e4;
+  --primary-hover: #0055cc;
+  --primary-fg: #ffffff;
+  --link: #0c66e4;
+
+  --pending-bg: #fff7d6;
+  --pending-fg: #7f5f01;
+  --hod-bg: #f3f0ff;
+  --hod-fg: #5e4db2;
+  --info-bg: #e9f2ff;
+  --info-fg: #09326c;
+  --success-bg: #dcfff1;
+  --success-fg: #216e4e;
+  --danger-bg: #ffeceb;
+  --danger-fg: #ae2e24;
+  --neutral-bg: #f1f2f4;
+  --neutral-fg: #44546f;
+  --ext: #a54800;
+  --ext-bg: #fff4e5;
+
+  --shadow-card: 0 1px 1px rgb(9 30 66 / 0.12), 0 0 1px rgb(9 30 66 / 0.18);
+  --shadow-pop: 0 8px 12px rgb(9 30 66 / 0.15), 0 0 1px rgb(9 30 66 / 0.31);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161a1d;
+    --surface: #1d2125;
+    --sunken: #22272b;
+    --hover: #282e33;
+    --selected: #1c2b41;
+    --text: #b6c2cf;
+    --muted: #8c9bab;
+    --border: #38414a;
+    --primary: #579dff;
+    --primary-hover: #85b8ff;
+    --primary-fg: #101214;
+    --link: #579dff;
+
+    --pending-bg: #533f04;
+    --pending-fg: #f5cd47;
+    --hod-bg: #352c63;
+    --hod-fg: #b8acf6;
+    --info-bg: #09326c;
+    --info-fg: #85b8ff;
+    --success-bg: #1c3329;
+    --success-fg: #7ee2b8;
+    --danger-bg: #42221f;
+    --danger-fg: #fd9891;
+    --neutral-bg: #2c333a;
+    --neutral-fg: #9fadbc;
+    --ext: #fec57b;
+    --ext-bg: #38291a;
+
+    --shadow-card: 0 1px 1px rgb(3 4 4 / 0.5), 0 0 1px rgb(3 4 4 / 0.6);
+    --shadow-pop: 0 8px 12px rgb(3 4 4 / 0.36), 0 0 1px rgb(3 4 4 / 0.5);
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-hover: var(--hover);
+  --color-selected: var(--selected);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-fg);
+  --color-link: var(--link);
+  --color-pending-bg: var(--pending-bg);
+  --color-pending-fg: var(--pending-fg);
+  --color-hod-bg: var(--hod-bg);
+  --color-hod-fg: var(--hod-fg);
+  --color-info-bg: var(--info-bg);
+  --color-info-fg: var(--info-fg);
+  --color-success-bg: var(--success-bg);
+  --color-success-fg: var(--success-fg);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-fg: var(--danger-fg);
+  --color-neutral-bg: var(--neutral-bg);
+  --color-neutral-fg: var(--neutral-fg);
+  --color-ext: var(--ext);
+  --color-ext-bg: var(--ext-bg);
+  --shadow-card: var(--shadow-card);
+  --shadow-pop: var(--shadow-pop);
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Noto Sans", "Noto Sans Bengali", "Noto Sans Devanagari", sans-serif;
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100dvh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+dialog {
+  color: var(--text);
+}
+dialog::backdrop {
+  background: rgb(9 30 66 / 0.54);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Reusable component classes (Tailwind v4: @utility so they can be @apply'd and take variants) */
+@utility card {
+  @apply rounded-md border border-border bg-surface shadow-(--shadow-card);
+}
+@utility btn {
+  @apply inline-flex min-h-11 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-50 md:min-h-8;
+}
+@utility btn-primary {
+  @apply btn bg-primary text-primary-fg hover:bg-primary-hover;
+}
+@utility btn-secondary {
+  @apply btn bg-neutral-bg text-text hover:bg-hover hover:brightness-95;
+}
+@utility btn-subtle {
+  @apply btn text-text hover:bg-hover;
+}
+@utility btn-success {
+  @apply btn bg-success-fg text-surface hover:opacity-90;
+}
+@utility btn-danger {
+  @apply btn bg-danger-fg text-surface hover:opacity-90;
+}
+@utility btn-info {
+  @apply btn bg-info-fg text-surface hover:opacity-90;
+}
+@utility input {
+  @apply min-h-11 w-full rounded-md border border-border bg-surface px-2.5 py-1.5 text-sm text-text placeholder:text-muted hover:bg-hover focus:bg-surface md:min-h-9;
+}
+@utility label {
+  @apply mb-1 block text-xs font-semibold text-muted;
+}
+@utility field-error {
+  @apply mt-1 text-xs text-danger-fg;
+}
+@utility skeleton {
+  @apply rounded-md bg-linear-to-r from-sunken via-hover to-sunken bg-size-[200%_100%] motion-safe:animate-[shimmer_1.4s_infinite];
+}
