@@ -9,7 +9,7 @@ from app.api.middleware import (
     OriginCheckMiddleware,
     RequestContextMiddleware,
 )
-from app.api.routes import auth, health
+from app.api.routes import audit, auth, health, leaves
 from app.core.config import Settings, get_settings
 from app.core.logging import configure_logging
 from app.db import get_engine
@@ -42,6 +42,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     register_error_handlers(app)
     app.include_router(health.router)
     app.include_router(auth.router)
+    app.include_router(leaves.router)
+    app.include_router(audit.router)
     return app
 
 

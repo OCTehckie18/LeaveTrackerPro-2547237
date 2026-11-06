@@ -6,6 +6,7 @@ from app.core.config import get_settings
 from app.core.ratelimit import limiter
 from app.schemas.auth import AppInfo, Badges, LoginIn, MeOut, PasswordIn, UserOut
 from app.services import auth as auth_service
+from app.services import leaves as leave_service
 from app.services.context import CurrentUser
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
@@ -46,7 +47,7 @@ def logout(
 @router.get("/me")
 def me(session: SessionDep, user: UserDep) -> MeOut:
     s = get_settings()
-    pending, needs_info = 0, 0  # real counts arrive with the leave API (next branch)
+    pending, needs_info = leave_service.badges(session, user)
     return MeOut(
         user=_user_out(user),
         org_today=org_today(s.org_tz),
